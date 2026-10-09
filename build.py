@@ -284,7 +284,7 @@ def main():
       <description>{html.escape(a['description'])}</description>
       <media:rating scheme="urn:simple">nonadult</media:rating>
       {cats}
-      <enclosure url="{cover_enc(a)}" type="{mime(a['cover_url'])}"/>
+      <enclosure url="{cover_enc(a)}" type="{mime(a['cover_url'])}" length="{cover_len(a)}"/>
       <content:encoded><![CDATA[{feed_html}]]></content:encoded>
     </item>""")
     rss = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -318,6 +318,11 @@ def main():
 
 def cover_enc(a):
     return a["cover_url"]
+
+
+def cover_len(a):
+    p = a["folder"] / a["cover"]
+    return p.stat().st_size if p.exists() else 0
 
 
 def mime(u):
