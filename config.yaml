@@ -1,7 +1,7 @@
 # Настройки блога и RSS-ленты для Дзена
 # TODO-поля заполняются после того, как известны домен и канал.
 
-site_url: "https://blog.example.ru"        # TODO: реальный поддомен блога, без слеша в конце
+site_url: "https://cubadom2024-jpg.github.io/flhaus-journal"   # временно; после DNS → https://blog.fl-haus.ru
 main_site_url: "https://fl-haus.ru"        # TODO: подтвердить
 dzen_channel_url: ""                       # TODO: ссылка на канал в Дзене
 
