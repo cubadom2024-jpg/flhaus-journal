@@ -1,0 +1,118 @@
+# Библиотека фото домов FL Haus. Агент выбирает обложку и иллюстрации отсюда.
+# orientation: h — горизонтальное, v — вертикальное (для обложки 16:9 кадрировать с --y)
+# Правила:
+#  - не подписывать фото названием модели или площади — модель на фото неизвестна;
+#  - в подписях можно: «Модульный дом FL Haus», «Кухня-гостиная в модульном доме», «Терраса» и т. п.;
+#  - одно и то же фото не ставить обложкой чаще раза в две недели (смотри журнал в topics.md).
+
+- file: exterior-house-garden-wide.jpg
+  orientation: h
+  season: лето
+  shows: дом с панорамным остеклением и большой террасой, газон, гравийные дорожки, берёзы, голубое небо
+  good_for: [обложка, жизнь за городом, участок, ипотека, деньги]
+  cover_y: 0.5
+
+- file: interior-living-dining-wide.jpg
+  orientation: h
+  season: любой
+  shows: светлая гостиная-столовая, стол, стулья, панорамные окна, потолок из имитации бруса
+  good_for: [обложка, интерьер, отделка, планировка, технологии]
+  cover_y: 0.5
+
+- file: exterior-house-front-sky.jpg
+  orientation: v
+  season: лето
+  shows: фасад с остеклённым фронтоном и террасой во всю ширину, газон, небо
+  good_for: [обложка, жизнь за городом, ипотека]
+  cover_y: 0.45
+
+- file: exterior-house-frost-sunrise.jpg
+  orientation: v
+  season: поздняя осень / заморозки
+  shows: дом на сваях в поле, иней на траве, рассвет
+  good_for: [обложка, зима, отопление, фундамент, сваи, холод, утепление]
+  cover_y: 0.5
+
+- file: exterior-terrace-garland-chairs.jpg
+  orientation: v
+  season: лето / ранняя осень, пасмурно
+  shows: крытая терраса с гирляндой и креслами, видны сваи и ступени
+  good_for: [терраса, жизнь за городом, фундамент]
+  cover_y: 0.45
+
+- file: exterior-terrace-lounge.jpg
+  orientation: v
+  season: лето
+  shows: терраса с плетёной мебелью, веники на стене, газон
+  good_for: [терраса, баня, отдых, жизнь за городом]
+  cover_y: 0.45
+
+- file: terrace-view-garden-logo.jpg
+  orientation: v
+  season: лето, пасмурно
+  shows: вид с крытой террасы на участок, табличка FL Haus, светильник
+  good_for: [терраса, участок, истории]
+  cover_y: 0.35
+
+- file: interior-kitchen-living-wide.jpg
+  orientation: v
+  season: любой
+  shows: кухня-гостиная: кухонный гарнитур, красный холодильник, диван, обеденный стол, кондиционер
+  good_for: [обложка, интерьер, планировка, истории, семья]
+  cover_y: 0.55
+
+- file: interior-kitchen-red-fridge.jpg
+  orientation: v
+  season: любой
+  shows: кухня крупно, красный холодильник, полка с посудой
+  good_for: [интерьер, быт]
+  cover_y: 0.4
+
+- file: interior-hall-dresser-ac.jpg
+  orientation: v
+  season: любой
+  shows: стена из тёмной доски, комод, кондиционер, двери в комнаты, тёплый вечерний свет
+  good_for: [интерьер, отделка, кондиционер, климат]
+  cover_y: 0.45
+
+- file: interior-dresser-bedroom-door.jpg
+  orientation: v
+  season: любой
+  shows: комод на фоне тёмной доски, вид в спальню с белыми стенами
+  good_for: [интерьер, отделка, уют]
+  cover_y: 0.5
+
+- file: interior-living-bookshelf.jpg
+  orientation: v
+  season: любой
+  shows: стеллаж с книгами, диван, гортензии, стена из доски
+  good_for: [интерьер, уют, удалённая работа, истории]
+  cover_y: 0.4
+
+- file: interior-bedroom-orange-headboard.jpg
+  orientation: v
+  season: осень
+  shows: спальня, стена из серой доски, тумбочка, яркое изголовье
+  good_for: [интерьер, спальня, отделка]
+  cover_y: 0.45
+
+- file: interior-living-sofa-curtain.jpg
+  orientation: v
+  season: любой
+  shows: диван с пледом у окна, белая стена из имитации бруса
+  good_for: [интерьер, уют]
+  cover_y: 0.5
+
+- file: interior-dining-window-table.jpg
+  orientation: v
+  season: осень
+  shows: круглый стол со стульями у панорамного окна, шторы
+  good_for: [интерьер, панорамные окна]
+  cover_y: 0.55
+
+- file: interior-bathroom-shower.jpg
+  orientation: v
+  season: любой
+  shows: санузел: инсталляция, душевое ограждение, тумба с раковиной, окно, плитка
+  good_for: [санузел, комплектация, что входит в дом, технологии]
+  cover_y: 0.5

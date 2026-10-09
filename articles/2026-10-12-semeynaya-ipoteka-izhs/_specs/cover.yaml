@@ -1,3 +1,7 @@
-type: cover
-kicker: "Ипотека · октябрь 2026"
-title: "Квартира под 12%, дом — под 6%: что изменилось в семейной ипотеке"
+type: photo-cover
+photo: photos/exterior-house-garden-wide.jpg
+y: 0.45
+position: top
+lines:
+  - {text: "Семейная ипотека", box: white}
+  - {text: "на дом — 6%", box: yellow}
