@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$title — $site_title</title>
+<meta name="description" content="$description">
+<link rel="canonical" href="$url">
+<meta property="og:type" content="article">
+<meta property="og:title" content="$title">
+<meta property="og:description" content="$description">
+<meta property="og:image" content="$cover">
+<meta property="og:url" content="$url">
+<link rel="alternate" type="application/rss+xml" title="$site_title" href="$site_url/rss.xml">
+<link rel="stylesheet" href="$site_url/static/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="logo" href="$site_url/">FL Haus <span>журнал</span></a>
+    <a class="top-link" href="$main_site_url">Модульные дома →</a>
+  </div>
+</header>
+<main class="wrap article">
+  <p class="meta"><span class="rubric">$rubric</span> · <time datetime="$date_iso">$date_ru</time></p>
+  <h1>$title</h1>
+  <p class="lead">$description</p>
+  <figure class="cover"><img src="$cover" alt="$title"></figure>
+  <article class="body">
+$body
+  </article>
+  <aside class="cta">
+    <h2>$cta_title</h2>
+    <p>$cta_text</p>
+    <a class="btn" href="$main_site_url">$cta_button</a>
+  </aside>
+  <p class="back"><a href="$site_url/">← Все статьи</a></p>
+</main>
+<footer class="foot">
+  <div class="wrap">© $year FL Haus · <a href="$main_site_url">Сайт компании</a> · <a href="$dzen_url">Мы в Дзене</a> · <a href="$site_url/rss.xml">RSS</a></div>
+</footer>
+</body>
+</html>
