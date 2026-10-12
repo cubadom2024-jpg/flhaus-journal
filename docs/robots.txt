@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cubadom2024-jpg.github.io/flhaus-journal/sitemap.xml
+Sitemap: https://fl-haus-journal.ru/sitemap.xml
