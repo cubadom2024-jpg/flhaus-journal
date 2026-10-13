@@ -1,30 +1,30 @@
-@font-face { font-family: "Montserrat"; src: url("fonts/Montserrat.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }
-@font-face { font-family: "Manrope"; src: url("fonts/Manrope.ttf") format("truetype"); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: "Jost"; src: url("fonts/Jost.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }
 
 :root {
   --bg: #ffffff;
-  --ink: #272727;
-  --muted: #6b6b6b;
+  --ink: #1D1D1D;
+  --muted: #5C5C5C;
   --line: #e7e7e3;
-  --yellow: #ffe129;
-  --soft: #f5f5f2;
+  --yellow: #FFDD29;
+  --soft: #F2F2F2; --graphite: #292929;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--ink);
-  font: 18px/1.65 "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font: 19px/1.6 "Futura PT", "Jost", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--yellow); text-decoration-thickness: 3px; text-underline-offset: 3px; }
 img { max-width: 100%; height: auto; display: block; }
-h1, h2, h3, .logo, .btn { font-family: "Montserrat", "Manrope", sans-serif; }
+h1, h2, h3, .logo, .btn { font-family: "Futura PT", "Jost", sans-serif; }
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
 .article { max-width: 760px; }
 
 .top { border-bottom: 2px solid var(--ink); background: var(--bg); }
 .top-in { display: flex; justify-content: space-between; align-items: center; height: 64px; }
 .logo { font-weight: 900; font-size: 20px; color: var(--ink); text-decoration: none; letter-spacing: .02em; text-transform: uppercase; }
-.logo span { background: var(--yellow); padding: 2px 8px; margin-left: 4px; }
+.logo { display: inline-flex; align-items: center; gap: 12px; }
+.logo img { width: 40px; height: 40px; border-radius: 8px; }
 .top-link { font-size: 15px; font-weight: 700; }
 
 .hero { padding: 56px 0 32px; max-width: 760px; }
@@ -33,7 +33,7 @@ h1, h2, h3, .logo, .btn { font-family: "Montserrat", "Manrope", sans-serif; }
 .hero p { color: var(--muted); margin: 0; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; padding-bottom: 64px; }
-.card { background: var(--bg); border: 2px solid var(--ink); overflow: hidden; text-decoration: none; color: inherit;
+.card { background: var(--bg); border: 2px solid var(--ink); border-radius: 18px; overflow: hidden; text-decoration: none; color: inherit;
         transition: transform .15s ease, box-shadow .15s ease; }
 .card:hover { transform: translate(-3px, -3px); box-shadow: 6px 6px 0 var(--yellow); }
 .card img { aspect-ratio: 16/9; object-fit: cover; width: 100%; border-bottom: 2px solid var(--ink); }
@@ -53,11 +53,11 @@ figcaption { font-size: 14px; color: var(--muted); margin-top: 8px; }
 .body blockquote { margin: 24px 0; padding: 4px 0 4px 20px; border-left: 6px solid var(--yellow); }
 .body li { margin: 6px 0; }
 
-.cta { background: var(--ink); color: #fff; padding: 30px; margin: 48px 0 24px; }
+.cta { background: var(--graphite); border-radius: 28px; color: #fff; padding: 30px; margin: 48px 0 24px; }
 .cta h2 { margin: 0 0 10px; font-size: 24px; line-height: 1.2; text-transform: uppercase; font-weight: 900; }
 .cta p { margin: 0 0 22px; color: #d6d6d6; }
 .btn { display: inline-block; background: var(--yellow); color: var(--ink); text-decoration: none; font-weight: 800;
-       padding: 13px 24px; text-transform: uppercase; font-size: 15px; letter-spacing: .03em; }
+       padding: 14px 26px; border-radius: 20px; text-transform: uppercase; font-size: 15px; letter-spacing: .03em; }
 .btn:hover { background: #fff; }
 .back { margin: 0 0 56px; }
 .foot { border-top: 2px solid var(--ink); padding: 24px 0; font-size: 14px; color: var(--muted); }
@@ -69,3 +69,7 @@ figcaption { font-size: 14px; color: var(--muted); margin-top: 8px; }
   .body h2 { font-size: 23px; }
   .cta { padding: 22px; }
 }
+
+.body p.src { font-size: 15px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; margin-top: 36px; }
+.cover img { border-radius: 18px; }
+.body figure img { border-radius: 14px; }

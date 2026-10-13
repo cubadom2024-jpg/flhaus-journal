@@ -1,27 +1,29 @@
 #!/usr/bin/env python3
-"""Инфографика и обложки в фирменном стиле FL Haus: YAML-описание → картинка 1200 px.
+"""Обложки и инфографика по дизайн-системе FL Haus (v1.1): YAML-описание → картинка 1200 px.
 
   python3 tools/infographic.py spec.yaml out.png      (или out.jpg)
 
-Фирменный стиль (по соцсетям FL Haus): жёлтый #FFE129, графит #272727, белый;
-заголовки — Montserrat ExtraBold/Black капсом на белых и жёлтых плашках, слегка повёрнутых;
-второстепенный текст — Manrope.
+Дизайн-система: жёлтый fl-yellow #FFDD29, графит #292929, graphite-deep #1D1D1D, paper #F2F2F2;
+шрифт Futura PT → бесплатная замена Jost (static/fonts/Jost.ttf); заголовки ExtraBold;
+без курсива, градиентов и третьего яркого цвета; жёлтый текст только на графите;
+на жёлтом — только graphite-deep. Фото — только настоящие дома FL Haus.
 
 Типы (поле type):
-  photo-cover — обложка: фото + заголовок на плашках
-       photo: photos/<файл>.jpg   y: 0.5 (центр кадра по вертикали)   position: top|bottom
-       lines: [{text: "СЕМЕЙНАЯ ИПОТЕКА", box: white}, {text: "ДОМ ПОД 6%", box: yellow}, {text: "...", box: none}]
-       size: 1200x675 (по умолчанию)
-  cover   — обложка без фото: title, kicker
-  stats   — 2–4 крупные цифры:  items: [{value: "5–14 дней", label: "монтаж на участке"}, ...]
-  bars    — горизонтальные столбцы: items: [{label, value, text, highlight: true}]
-  steps   — шаги по порядку: items: ["...", ...]
-  compare — две колонки: left: {title, points}, right: {title, points}
-  checklist — список с галочками: items: [...]
-Общие поля: kicker (жёлтая плашка над заголовком), title, source («Источник: ...» — обязательно для цифр).
+  cover     — обложка 1200×675: слева графит с заголовком ЗАГЛАВНЫМИ, справа фото дома.
+              photo: photos/<файл>.jpg, y: 0.5, title: "СЕМЕЙНАЯ ИПОТЕКА НА [ДОМ — 6%]"
+              (часть в [квадратных скобках] — жёлтым, одна на обложку), kicker: "Ипотека"
+  facts     — жёлтая панель FactBlock: groups: [{emoji: "⏰", q: "Когда?", rows: [["Дата", "21–23 марта"]]}]
+  price     — PriceCard: model, rows: [["Площадь", "43 м²"]], price: "4 950 000 ₽", note: "*Цена до 25.10.2026…"
+  stats     — 2–4 крупные цифры на графите: items: [{value, label}]
+  bars      — столбцы: items: [{label, value, text, highlight: true}]
+  steps     — шаги по порядку: items: ["...", ...]
+  compare   — две колонки: left: {title, points}, right: {title, points}
+  checklist — список фактов с галочками: items: [...]
+Общие поля: kicker (жёлтая метка над заголовком), title, source («Источник: …» — обязательно для цифр).
 """
 import base64
 import html
+import re
 import sys
 from pathlib import Path
 
@@ -31,8 +33,8 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
 FONTS = ROOT / "static" / "fonts"
+LOGO = ROOT / "static" / "img" / "fl-haus-logo-yellow.jpg"
 W = 1200
-YELLOW, INK = "#FFE129", "#272727"
 
 
 def b64(path, mime):
@@ -40,57 +42,58 @@ def b64(path, mime):
 
 
 def font_css():
-    return (f"@font-face{{font-family:Montserrat;src:url({b64(FONTS / 'Montserrat.ttf', 'font/ttf')});font-weight:100 900}}"
-            f"@font-face{{font-family:Manrope;src:url({b64(FONTS / 'Manrope.ttf', 'font/ttf')});font-weight:200 800}}")
+    return f"@font-face{{font-family:Jost;src:url({b64(FONTS / 'Jost.ttf', 'font/ttf')});font-weight:100 900}}"
 
 
 CSS = """
 *{box-sizing:border-box;margin:0;padding:0}
-body{width:__W__px;font-family:Manrope,Inter,sans-serif;background:#fff;color:#272727}
-.card{padding:64px 72px 52px;background:#fff}
-.mk{display:inline-block;font-family:Montserrat;font-weight:800;text-transform:uppercase;letter-spacing:.02em;line-height:1.05;padding:8px 16px 6px}
-.mk.y{background:#FFE129;color:#272727}
-.mk.w{background:#fff;color:#272727}
-.mk.k{background:#272727;color:#fff}
-.kick{font-size:24px;transform:rotate(-1.2deg);margin-bottom:22px}
-h1{font-family:Montserrat;font-weight:800;font-size:46px;line-height:1.12;letter-spacing:-.01em;margin-bottom:40px;max-width:1040px;text-transform:uppercase}
-.src{margin-top:40px;font-size:19px;color:#777;border-top:2px solid #272727;padding-top:16px;display:flex;justify-content:space-between;align-items:center}
-.brand{font-family:Montserrat;font-weight:900;color:#272727;font-size:22px;letter-spacing:.02em}
-.brand b{background:#FFE129;padding:2px 8px;margin-left:4px}
+:root{--y:#FFDD29;--g:#292929;--gd:#1D1D1D;--paper:#F2F2F2;--muted:#5C5C5C;--mod:#B3B3B3;--fg:#474A51}
+body{width:__W__px;font-family:"Futura PT",Jost,"Century Gothic",sans-serif;background:var(--paper);color:var(--gd)}
+.card{padding:76px 80px 60px;background:var(--paper)}
+.kick{display:inline-block;background:var(--y);color:var(--gd);font-weight:700;font-size:26px;line-height:1;padding:12px 20px;border-radius:999px;margin-bottom:26px}
+h1{font-weight:800;font-size:54px;line-height:1.1;margin-bottom:44px;max-width:1040px}
+.src{margin-top:44px;font-size:24px;line-height:1.4;font-weight:500;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:24px}
+.logo{height:64px;width:64px;border-radius:12px;flex:0 0 64px}
 .stats{display:grid;gap:22px}
-.stat{border:2px solid #272727;padding:30px 30px 26px}
-.stat .v{font-family:Montserrat;font-weight:900;font-size:56px;letter-spacing:-.02em;line-height:1;display:inline-block;background:linear-gradient(transparent 58%,#FFE129 58%);padding:0 4px}
-.stat .l{font-size:25px;color:#444;margin-top:16px;line-height:1.3;font-weight:500}
-.bar{margin-bottom:24px}
-.bar .t{display:flex;justify-content:space-between;align-items:baseline;font-size:26px;font-weight:600;margin-bottom:10px}
-.bar .t b{font-family:Montserrat;font-weight:900;font-size:30px}
-.track{height:32px;background:#EFEFEC}
-.fill{height:100%;background:#BDBDB8}
-.fill.hl{background:#FFE129;box-shadow:inset 0 0 0 2px #272727}
+.stat{background:var(--g);border-radius:18px;padding:34px 34px 30px}
+.stat .v{font-weight:800;font-size:68px;line-height:1;color:var(--y);white-space:nowrap}
+.stat .l{font-size:28px;line-height:1.3;color:#fff;margin-top:16px;font-weight:400}
+.bar{margin-bottom:26px}
+.bar .t{display:flex;justify-content:space-between;align-items:baseline;font-size:30px;font-weight:400;margin-bottom:10px;gap:20px}
+.bar .t b{font-weight:800;font-size:34px}
+.track{height:34px;background:#E1E1DE;border-radius:17px;overflow:hidden}
+.fill{height:100%;background:var(--fg);border-radius:17px}
+.fill.hl{background:var(--y)}
 .steps{counter-reset:s;display:grid;gap:16px}
-.step{display:flex;gap:24px;align-items:center;border:2px solid #272727;padding:20px 26px;font-size:27px;line-height:1.3;font-weight:600}
-.step:before{counter-increment:s;content:counter(s);flex:0 0 58px;height:58px;background:#FFE129;font-family:Montserrat;font-weight:900;font-size:30px;display:flex;align-items:center;justify-content:center}
+.step{display:flex;gap:26px;align-items:center;background:#fff;border-radius:18px;padding:22px 28px;font-size:30px;line-height:1.3}
+.step:before{counter-increment:s;content:counter(s);flex:0 0 62px;height:62px;border-radius:50%;background:var(--y);color:var(--gd);font-weight:800;font-size:32px;display:flex;align-items:center;justify-content:center}
 .cmp{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-.col{border:2px solid #272727;padding:30px}
-.col.b{background:#272727;color:#fff}
-.col h2{font-family:Montserrat;font-weight:800;text-transform:uppercase;font-size:28px;margin-bottom:20px}
-.col.b h2 span{background:#FFE129;color:#272727;padding:2px 10px}
-.col li{font-size:24px;line-height:1.35;margin:0 0 14px 28px;font-weight:500}
-.chk{display:grid;gap:16px}
-.chk div{font-size:28px;line-height:1.35;padding-left:58px;position:relative;font-weight:600}
-.chk div:before{content:"✓";position:absolute;left:0;top:-1px;width:40px;height:40px;background:#FFE129;color:#272727;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:24px}
-.cover{height:675px;display:flex;flex-direction:column;justify-content:flex-end;padding:72px;background:#272727;color:#fff}
-.cover h1{font-size:62px;color:#fff;margin-bottom:28px}
-.cover .brand{color:#fff}
-.pc{position:relative;overflow:hidden;background-size:cover;background-position:center}
-.pc .lines{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:0}
-.pc .lines.top{top:9%}
-.pc .lines.bottom{bottom:9%}
-.pc .mk{font-size:60px;padding:10px 22px 6px;box-shadow:0 6px 24px rgba(0,0,0,.18)}
-.pc .mk.n{background:none;color:#fff;box-shadow:none;text-shadow:0 2px 18px rgba(0,0,0,.45)}
-.pc .mk:nth-child(odd){transform:rotate(-1.3deg)}
-.pc .mk:nth-child(even){transform:rotate(.8deg);margin-top:-4px}
-.pc .logo{position:absolute;right:28px;bottom:22px;font-family:Montserrat;font-weight:900;font-size:22px;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.5)}
+.col{border-radius:24px;padding:36px;background:#fff}
+.col.b{background:var(--g);color:#fff}
+.col h2{font-weight:800;font-size:34px;line-height:1.15;margin-bottom:22px}
+.col.b h2{color:var(--y)}
+.col li{font-size:28px;line-height:1.35;margin:0 0 14px 30px}
+.chk{display:grid;gap:18px}
+.chk div{font-size:31px;line-height:1.35;padding-left:62px;position:relative}
+.chk div:before{content:"✓";position:absolute;left:0;top:-1px;width:44px;height:44px;border-radius:12px;background:var(--y);color:var(--gd);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:26px}
+.facts{background:var(--y);color:var(--gd);border-radius:52px 0 0 0;padding:70px}
+.facts .grp+.grp{margin-top:52px}
+.facts .q{font-weight:800;font-size:52px;line-height:1.1;margin-bottom:18px}
+.facts .row{font-size:36px;line-height:1.45}
+.facts .row b{font-weight:700}
+.price{background:var(--g);color:#fff;border-radius:52px;padding:70px}
+.price .m{font-weight:800;font-size:52px;line-height:1.1}
+.price .row{font-size:34px;line-height:1.45;margin-top:10px}
+.price .row b{font-weight:700}
+.price .v{font-weight:800;font-size:96px;line-height:1;color:var(--y);margin:30px 0 26px;white-space:nowrap}
+.price .n{font-size:26px;line-height:1.4;color:var(--mod);font-weight:500}
+.cover{position:relative;width:1200px;height:675px;background:var(--g);overflow:hidden}
+.cover .ph{position:absolute;right:0;top:0;bottom:0;width:560px;background-size:cover;background-position:center;border-radius:52px 0 0 52px}
+.cover .tx{position:absolute;left:72px;top:64px;bottom:64px;width:530px;display:flex;flex-direction:column;justify-content:center}
+.cover .kick{align-self:flex-start;margin-bottom:30px}
+.cover h1{color:#fff;font-size:64px;line-height:1.02;text-transform:uppercase;margin:0;max-width:none;letter-spacing:.005em}
+.cover h1 em{font-style:normal;color:var(--y)}
+.cover .lg{position:absolute;left:72px;bottom:56px;height:72px;width:72px;border-radius:14px}
 """
 
 
@@ -99,19 +102,26 @@ def esc(x):
 
 
 def grade(im):
-    """Фирменная обработка фото: чуть теплее, контрастнее и насыщеннее."""
-    im = ImageEnhance.Contrast(im).enhance(1.07)
-    im = ImageEnhance.Color(im).enhance(1.12)
+    """Фирменная обработка фото по LUT FL_Haus_warm_v1: теплее (R +3,5%, B −6%),
+    мягкая S-кривая, чёрная точка 2%, белая 98%, насыщенность −8%."""
+    lut = []
+    for v in range(256):
+        x = v / 255
+        x = 0.02 + x * 0.96                       # чёрная 2%, белая 98%
+        x = x + 0.06 * (x - 0.5) * (1 - abs(2 * x - 1))  # мягкая S-кривая
+        lut.append(max(0, min(255, round(x * 255))))
+    im = im.point(lut * 3)
     r, g, b = im.split()
-    r = r.point(lambda v: min(255, int(v * 1.03)))
-    b = b.point(lambda v: int(v * 0.97))
-    return Image.merge("RGB", (r, g, b))
+    r = r.point(lambda v: min(255, round(v * 1.035)))
+    b = b.point(lambda v: round(v * 0.94))
+    im = Image.merge("RGB", (r, g, b))
+    return ImageEnhance.Color(im).enhance(0.92)
 
 
 def photo_data(spec, size):
     w, h = size
     im = ImageOps.exif_transpose(Image.open(ROOT / spec["photo"])).convert("RGB")
-    im = ImageOps.fit(im, (w, h), Image.LANCZOS, centering=(0.5, float(spec.get("y", 0.5))))
+    im = ImageOps.fit(im, (w * 2 // 2, h), Image.LANCZOS, centering=(float(spec.get("x", 0.5)), float(spec.get("y", 0.5))))
     if spec.get("grade", True):
         im = grade(im)
     tmp = Path("/tmp") / f"_cover_{abs(hash(spec['photo']))}.jpg"
@@ -119,26 +129,27 @@ def photo_data(spec, size):
     return b64(tmp, "image/jpeg")
 
 
+def accent(s):
+    """[часть] → жёлтое слово на обложке."""
+    return re.sub(r"\[(.+?)\]", r"<em>\1</em>", esc(s))
+
+
 def body(spec):
     t = spec.get("type")
-    title = f"<h1>{esc(spec['title'])}</h1>" if spec.get("title") else ""
-    kick = f"<div><span class='mk y kick'>{esc(spec['kicker'])}</span></div>" if spec.get("kicker") else ""
-    brand = "<span class=brand>FL<b>HAUS</b></span>"
-    if t == "photo-cover":
-        w, h = (int(x) for x in str(spec.get("size", "1200x675")).split("x"))
-        cls = {"white": "w", "yellow": "y", "black": "k", "none": "n"}
-        lines = "".join(f"<span class='mk {cls.get(l.get('box', 'white'), 'w')}'>{esc(l['text'])}</span>"
-                        for l in spec["lines"])
-        return (f"<div class=pc style='width:{w}px;height:{h}px;background-image:url({photo_data(spec, (w, h))})'>"
-                f"<div class='lines {spec.get('position', 'top')}'>{lines}</div><div class=logo>FL HAUS</div></div>")
+    logo = f"<img class=logo src='{b64(LOGO, 'image/jpeg')}'>"
+    kick = f"<div><span class=kick>{esc(spec['kicker'])}</span></div>" if spec.get("kicker") else ""
     if t == "cover":
-        return f"<div class=cover>{kick}<h1>{esc(spec['title'])}</h1>{brand}</div>"
+        k = f"<span class=kick>{esc(spec['kicker'])}</span>" if spec.get("kicker") else ""
+        return (f"<div class=cover><div class=ph style=\"background-image:url({photo_data(spec, (560, 675))})\"></div>"
+                f"<div class=tx>{k}<h1>{accent(spec['title'])}</h1></div>"
+                f"<img class=lg src='{b64(LOGO, 'image/jpeg')}'></div>")
+    title = f"<h1>{esc(spec['title'])}</h1>" if spec.get("title") else ""
     if t == "stats":
         items = spec["items"]
         cols = 2 if len(items) == 4 else len(items)
-        inner = "".join(f"<div class=stat><div class=v>{esc(i['value'])}</div><div class=l>{esc(i['label'])}</div></div>"
-                        for i in items)
-        content = f"<div class=stats style='grid-template-columns:repeat({cols},1fr)'>{inner}</div>"
+        content = f"<div class=stats style='grid-template-columns:repeat({cols},1fr)'>" + "".join(
+            f"<div class=stat><div class=v>{esc(i['value'])}</div><div class=l>{esc(i['label'])}</div></div>"
+            for i in items) + "</div>"
     elif t == "bars":
         mx = max(float(i["value"]) for i in spec["items"]) or 1
         content = "".join(
@@ -149,15 +160,24 @@ def body(spec):
         content = "<div class=steps>" + "".join(f"<div class=step>{esc(s)}</div>" for s in spec["items"]) + "</div>"
     elif t == "compare":
         def col(c, cls):
-            return f"<div class='col {cls}'><h2><span>{esc(c['title'])}</span></h2><ul>" + "".join(
+            return f"<div class='col {cls}'><h2>{esc(c['title'])}</h2><ul>" + "".join(
                 f"<li>{esc(p)}</li>" for p in c["points"]) + "</ul></div>"
         content = f"<div class=cmp>{col(spec['left'], 'a')}{col(spec['right'], 'b')}</div>"
     elif t == "checklist":
         content = "<div class=chk>" + "".join(f"<div>{esc(s)}</div>" for s in spec["items"]) + "</div>"
+    elif t == "facts":
+        content = "<div class=facts>" + "".join(
+            f"<div class=grp><div class=q>{esc(g.get('emoji', ''))} {esc(g['q'])}</div>" + "".join(
+                f"<div class=row><b>{esc(r[0])}:</b> {esc(r[1])}</div>" for r in g["rows"]) + "</div>"
+            for g in spec["groups"]) + "</div>"
+    elif t == "price":
+        content = (f"<div class=price><div class=m>{esc(spec['model'])}</div>"
+                   + "".join(f"<div class=row><b>{esc(r[0])}:</b> {esc(r[1])}</div>" for r in spec.get("rows", []))
+                   + f"<div class=v>{esc(spec['price'])}</div><div class=n>{esc(spec['note'])}</div></div>")
     else:
         raise SystemExit(f"неизвестный type: {t}")
     src = esc(spec.get("source", ""))
-    return f"<div class=card>{kick}{title}{content}<div class=src><span>{('Источник: ' + src) if src else ''}</span>{brand}</div></div>"
+    return f"<div class=card>{kick}{title}{content}<div class=src><span>{('Источник: ' + src) if src else ''}</span>{logo}</div></div>"
 
 
 def render(spec, out):
