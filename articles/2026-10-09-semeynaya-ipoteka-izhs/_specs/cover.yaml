@@ -1,7 +1,5 @@
-type: photo-cover
-photo: photos/exterior-house-garden-wide.jpg
+type: cover
+photo: photos/exterior-house-front-sky.jpg
 y: 0.45
-position: top
-lines:
-  - {text: "Семейная ипотека", box: white}
-  - {text: "на дом — 6%", box: yellow}
+kicker: "Ипотека"
+title: "Семейная ипотека на [дом — 6%]"

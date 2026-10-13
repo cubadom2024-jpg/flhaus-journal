@@ -134,6 +134,7 @@ def render_body(a):
         return f'<{m.group(1)} id="part-{n}">'
 
     h = re.sub(r"<(h[234])>", hid, h)
+    h = re.sub(r"<ul>(\s*<li>📍)", r'<ul class="places">\1', h)  # список адресов — отдельной плашкой на сайте
     return h
 
 
@@ -257,7 +258,7 @@ def main():
             url=url, cover=cover, date_iso=a["date"].isoformat(), date_ru=ru_date(a["date"]),
             rubric=html.escape(a.get("rubric", "Статьи")), body=a["body_html"],
             cta_title=html.escape(cta.get("title", "")), cta_text=html.escape(cta.get("text", "")),
-            cta_button=html.escape(cta.get("button", "")),
+            cta_button=html.escape(cta.get("button", "")), cta_url=html.escape(cta.get("url", CFG["main_site_url"]), quote=True),
         ), encoding="utf-8")
         cards.append(card_t.substitute(url=url, cover=cover, title=html.escape(a["title"]),
                                        description=html.escape(a["description"]),
@@ -275,6 +276,9 @@ def main():
     items = []
     for a in articles[: CFG.get("feed_items", 30)]:
         feed_html = sanitize(a["body_html"])
+        if cta.get("url"):  # в Дзене кнопок нет — призыв уходит заметной ссылкой-подзаголовком
+            feed_html += (f'<h2><a href="{html.escape(cta["url"], quote=True)}">👉 {html.escape(cta["button"])} →</a></h2>'
+                          f'<p>{html.escape(cta.get("text", ""))}</p>')
         cats = "".join(f"<category>{c}</category>" for c in cats_common)
         items.append(f"""    <item>
       <title>{html.escape(a['title'])}</title>
