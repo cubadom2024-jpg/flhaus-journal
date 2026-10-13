@@ -94,6 +94,36 @@ h1{font-weight:800;font-size:54px;line-height:1.1;margin-bottom:44px;max-width:1
 .cover h1{color:#fff;font-size:64px;line-height:1.02;text-transform:uppercase;margin:0;max-width:none;letter-spacing:.005em}
 .cover h1 em{font-style:normal;color:var(--y)}
 .cover .lg{position:absolute;left:72px;bottom:56px;height:72px;width:72px;border-radius:14px}
+
+/* Дзен-стиль (скилл fl-haus-dzen-style): холст 1600, графит, поля 96 */
+.dz{width:1600px;background:var(--g);color:#fff;padding:96px}
+.dz h1{font-weight:800;font-size:64px;line-height:1.08;text-transform:uppercase;margin:0 0 18px;max-width:1400px}
+.dz .sub{font-size:38px;line-height:1.3;color:var(--mod);margin-bottom:56px}
+.dz .grp+.grp{margin-top:48px}
+.dz .q{font-weight:800;font-size:48px;color:var(--y);margin-bottom:18px}
+.dz .it{font-size:38px;line-height:1.35;padding-left:46px;position:relative;margin:12px 0}
+.dz .it:before{content:"";position:absolute;left:0;top:17px;width:22px;height:22px;border-radius:50%;background:var(--y)}
+.dz .foot{margin-top:64px;font-size:26px;font-weight:500;color:var(--mod);display:flex;justify-content:space-between;align-items:center;gap:24px}
+.dz .foot img{width:72px;height:72px;border-radius:14px}
+.flow{display:flex;align-items:stretch;gap:0}
+.flow .c{flex:1;background:var(--paper);color:var(--gd);border-radius:48px;padding:48px 40px}
+.flow .c.y{background:var(--y)}
+.flow .c .n{font-weight:800;font-size:44px;line-height:1.1;margin-bottom:16px}
+.flow .c .t{font-size:34px;line-height:1.35}
+.flow .ar{flex:0 0 88px;display:flex;align-items:center;justify-content:center}
+.flow .ar:before{content:"";display:block;width:52px;height:8px;background:var(--y);border-radius:4px;position:relative}
+.flow .ar:after{content:"";display:block;width:0;height:0;border-left:22px solid var(--y);border-top:18px solid transparent;border-bottom:18px solid transparent;margin-left:-4px}
+.concl{margin-top:48px;background:var(--fg);border-radius:32px;padding:36px 44px;font-size:38px;line-height:1.35}
+.concl b{color:var(--y);font-weight:800}
+.dcov{position:relative;width:1600px;height:900px;background:var(--g);overflow:hidden}
+.dcov .ph{position:absolute;right:0;top:0;bottom:0;width:840px;background-size:cover;background-position:center;border-radius:72px 0 0 72px}
+.dcov .tx{position:absolute;left:96px;top:96px;bottom:96px;width:616px;display:flex;flex-direction:column}
+.dcov .rb{align-self:flex-start;background:var(--y);color:var(--gd);font-weight:700;font-size:40px;line-height:1;padding:16px 30px;border-radius:999px}
+.dcov h1{margin:auto 0;color:#fff;font-weight:800;text-transform:uppercase;line-height:.98;letter-spacing:.005em}
+.dcov h1 em{font-style:normal;color:var(--y)}
+.dcov h1 span{display:block;white-space:nowrap}
+.dcov .sig{display:flex;align-items:center;gap:24px;font-weight:500;font-size:32px;color:var(--mod)}
+.dcov .sig img{width:96px;height:96px;border-radius:18px}
 """
 
 
@@ -138,6 +168,25 @@ def body(spec):
     t = spec.get("type")
     logo = f"<img class=logo src='{b64(LOGO, 'image/jpeg')}'>"
     kick = f"<div><span class=kick>{esc(spec['kicker'])}</span></div>" if spec.get("kicker") else ""
+    if t == "dzen-cover":
+        lines = "".join(f"<span>{accent(l)}</span>" for l in spec["lines"])
+        return (f"<div class=dcov><div class=ph style=\"background-image:url({photo_data(spec, (840, 900))})\"></div>"
+                f"<div class=tx><span class=rb>{esc(spec['rubric'])}</span><h1 id=ct style='font-size:150px'>{lines}</h1>"
+                f"<div class=sig><img src='{b64(LOGO, 'image/jpeg')}'>FL HAUS · модульные дома</div></div></div>")
+    if t in ("dzen-checklist", "dzen-flow"):
+        head = f"<h1>{esc(spec['title'])}</h1>" + (f"<div class=sub>{esc(spec['subtitle'])}</div>" if spec.get("subtitle") else "<div style='height:40px'></div>")
+        if t == "dzen-checklist":
+            content = "".join(f"<div class=grp><div class=q>{esc(g['q'])}</div>" + "".join(
+                f"<div class=it>{esc(i)}</div>" for i in g["items"]) + "</div>" for g in spec["groups"])
+        else:
+            cards = []
+            for k, c in enumerate(spec["cards"]):
+                if k:
+                    cards.append("<div class=ar></div>")
+                cards.append(f"<div class='c{' y' if k == 1 else ''}'><div class=n>{esc(c['title'])}</div><div class=t>{esc(c['text'])}</div></div>")
+            content = "<div class=flow>" + "".join(cards) + "</div>" + (f"<div class=concl>{spec['conclusion']}</div>" if spec.get("conclusion") else "")
+        return (f"<div class=dz>{head}{content}<div class=foot><span>{esc(spec.get('source', ''))}</span>"
+                f"<img src='{b64(LOGO, 'image/jpeg')}'></div></div>")
     if t == "cover":
         k = f"<span class=kick>{esc(spec['kicker'])}</span>" if spec.get("kicker") else ""
         return (f"<div class=cover><div class=ph style=\"background-image:url({photo_data(spec, (560, 675))})\"></div>"
@@ -186,10 +235,15 @@ def render(spec, out):
     jpg = str(out).lower().endswith((".jpg", ".jpeg"))
     with sync_playwright() as p:
         b = p.chromium.launch()
-        pg = b.new_page(viewport={"width": W, "height": 700}, device_scale_factor=1)
-        pg.set_content(page_html)
+        vw = 1600 if str(spec.get("type", "")).startswith("dzen") else W
+        pg = b.new_page(viewport={"width": vw, "height": 900}, device_scale_factor=1)
+        pg.set_content(page_html.replace(f"body{{width:{W}px", f"body{{width:{vw}px"))
         pg.evaluate("document.fonts.ready")
         pg.wait_for_timeout(300)
+        # обложка Дзена: уменьшать заголовок со 150 px, пока самая длинная строка не влезет в 616 px
+        pg.evaluate("""() => { const h = document.getElementById('ct'); if (!h) return;
+          let s = 150; const w = () => Math.max(...[...h.children].map(c => c.scrollWidth));
+          while (s > 60 && w() > 616) { s -= 2; h.style.fontSize = s + 'px'; } }""")
         pg.query_selector("body > div").screenshot(path=str(out), type="jpeg" if jpg else "png",
                                                   **({"quality": 90} if jpg else {}))
         b.close()

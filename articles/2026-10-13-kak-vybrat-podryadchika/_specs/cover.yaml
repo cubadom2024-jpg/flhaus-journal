@@ -1,6 +1,6 @@
-type: cover
+type: dzen-cover
 photo: photos/exterior-house-garden-wide.jpg
 y: 0.5
 x: 0.55
-kicker: "Истории"
-title: "Как не потерять [аванс] на стройке"
+rubric: "Истории"
+lines: ["Аванс", "[2 млн]", "и фирмы", "нет"]

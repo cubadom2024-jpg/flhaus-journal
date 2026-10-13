@@ -17,16 +17,19 @@ from infographic import grade  # noqa: E402  фирменная обработк
 src, dst = Path(sys.argv[1]), Path(sys.argv[2])
 keep = "--keep" in sys.argv
 y = float(sys.argv[sys.argv.index("--y") + 1]) if "--y" in sys.argv else 0.5
+W = int(sys.argv[sys.argv.index("--w") + 1]) if "--w" in sys.argv else 1600  # Дзен: фото 1600 px по ширине
 im = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
 if keep:
-    if im.width > 1200:
-        im = im.resize((1200, round(im.height * 1200 / im.width)), Image.LANCZOS)
+    if im.height > im.width * 5 / 4:  # не выше 4:5
+        im = ImageOps.fit(im, (im.width, round(im.width * 5 / 4)), Image.LANCZOS, centering=(0.5, y))
+    if im.width > W:
+        im = im.resize((W, round(im.height * W / im.width)), Image.LANCZOS)
 else:
-    im = ImageOps.fit(im, (1200, 675), Image.LANCZOS, centering=(0.5, y))
+    im = ImageOps.fit(im, (W, round(W * 9 / 16)), Image.LANCZOS, centering=(0.5, y))
 if "--raw" not in sys.argv:
     im = grade(im)
 if im.width < 700:
     raise SystemExit(f"фото слишком маленькое: {im.width}px, Дзену нужно от 700")
 dst.parent.mkdir(parents=True, exist_ok=True)
-im.save(dst, "JPEG", quality=85, optimize=True, progressive=True)
+im.save(dst, "JPEG", quality=88, optimize=True, progressive=True)
 print("ok", dst, im.size)
