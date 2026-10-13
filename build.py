@@ -239,6 +239,12 @@ def main():
 
     page_t, index_t, card_t = tpl("article.html"), tpl("index.html"), tpl("card.html")
     cta = CFG.get("site_cta", {})
+    phones = CFG.get("phones", [])
+    phones_site = "".join(
+        f'<a class="phone" href="tel:{html.escape(ph["tel"], quote=True)}">{html.escape(ph["number"])}</a>'
+        f'<span class="city"> - {html.escape(ph["city"])}</span><br>' for ph in phones)
+    phones_feed = ("<p><b>Позвоните нам:</b></p>" + "".join(
+        f'<p><b>{html.escape(ph["number"])}</b> - {html.escape(ph["city"])}</p>' for ph in phones)) if phones else ""
     common = dict(site_title=html.escape(CFG["site_title"]), site_url=BASE,
                   main_site_url=CFG["main_site_url"], year=dt.date.today().year,
                   dzen_url=CFG.get("dzen_channel_url") or CFG["main_site_url"])
@@ -259,6 +265,7 @@ def main():
             rubric=html.escape(a.get("rubric", "Статьи")), body=a["body_html"],
             cta_title=html.escape(cta.get("title", "")), cta_text=html.escape(cta.get("text", "")),
             cta_button=html.escape(cta.get("button", "")), cta_url=html.escape(cta.get("url", CFG["main_site_url"]), quote=True),
+            phones=phones_site,
         ), encoding="utf-8")
         cards.append(card_t.substitute(url=url, cover=cover, title=html.escape(a["title"]),
                                        description=html.escape(a["description"]),
@@ -279,6 +286,7 @@ def main():
         if cta.get("url"):  # в Дзене кнопок нет — призыв уходит заметной ссылкой-подзаголовком
             feed_html += (f'<h2><a href="{html.escape(cta["url"], quote=True)}">👉 {html.escape(cta["button"])} →</a></h2>'
                           f'<p>{html.escape(cta.get("text", ""))}</p>')
+        feed_html += phones_feed
         cats = "".join(f"<category>{c}</category>" for c in cats_common)
         items.append(f"""    <item>
       <title>{html.escape(a['title'])}</title>
