@@ -1,0 +1,145 @@
+{
+ "id": "demo-palata",
+ "series": "ЧТО ЕСЛИ ТЫ...",
+ "episode": "ПАЛАТА С БЫВШЕЙ",
+ "tag": "стены были белые",
+ "voice": {
+  "engine": "rhvoice",
+  "voice": "artemiy",
+  "tempo": 1.18,
+  "gap": 0.05
+ },
+ "hud": [
+  {
+   "label": "ДЕНЬ",
+   "value": "1"
+  },
+  {
+   "label": "БЕЛЫХ СТЕН",
+   "value": "4"
+  }
+ ],
+ "title_card": {
+  "kicker": "ты в старости",
+  "lines": [
+   "С *БЫВШЕЙ*",
+   "В ДУРКЕ"
+  ],
+  "sub": "стены были белые"
+ },
+ "cta": "Отправь тому, с кем хотел бы так провести старость",
+ "characters": {
+  "he": "пожилой мужчина 84 лет, лысый с седыми пучками волос над ушами, белый воротник-пластырь, бело-голубая полосатая пижама, тёмно-синие тапки",
+  "she": "пожилая женщина, сиреневые волосы в пучке с карандашом, круглые очки, розовый халат в белые цветочки-ромашки, розовые тапки",
+  "doctor": "пожилой врач, седая борода, очки, белый халат, стетоскоп, планшет-клипборд",
+  "orderly": "санитар в бирюзовой форме и повязке на лбу"
+ },
+ "shots": [
+  {
+   "image": "img/01.png",
+   "prompt": "he stands in a psychiatric ward room by his bed, beige walls, window with plant, wall clock, close shot from waist up",
+   "lines": [
+    "Тебе восемьдесят четыре,"
+   ],
+   "motion": "zoom_in",
+   "stickers": [
+    {
+     "type": "big",
+     "text": "84",
+     "pos": [
+      0.52,
+      0.27
+     ],
+     "at": 0.15
+    }
+   ]
+  },
+  {
+   "image": "img/02.png",
+   "prompt": "wide shot of the ward: he stands between two beds, nightstand with a glass of water, door with sign PALATA",
+   "lines": [
+    "ты в {дурке|дурке},"
+   ],
+   "motion": "zoom_out"
+  },
+  {
+   "image": "img/03.png",
+   "prompt": "the door opens, orderly brings in she with a document folder, she looks proud",
+   "lines": [
+    "и в твою палату заводят новенькую."
+   ],
+   "motion": "pan_right"
+  },
+  {
+   "image": "img/04.png",
+   "prompt": "close-up of she exhaling with eyes closed, a puff of breath, orderly behind",
+   "lines": [
+    "Ты узнаёшь её по вздоху."
+   ],
+   "motion": "punch",
+   "focus": [
+    0.45,
+    0.35
+   ],
+   "sfx": [
+    {
+     "name": "gasp",
+     "at": 0.6,
+     "vol": 0.5
+    }
+   ]
+  },
+  {
+   "image": "img/05.png",
+   "prompt": "extreme close-up of he with wide shocked eyes and open mouth",
+   "lines": [
+    "Это твоя бывшая. Та самая,"
+   ],
+   "motion": "shake",
+   "transition": "flash",
+   "stickers": [
+    {
+     "type": "stamp",
+     "text": "БЫВШАЯ",
+     "pos": [
+      0.5,
+      0.25
+     ],
+     "at_word": 2
+    }
+   ]
+  },
+  {
+   "image": "img/02.png",
+   "prompt": "flat illustration inside a polaroid style: young woman with dark curly hair in a blue dress carries a cardboard box with an orange cat out of an apartment, 1990s wallpaper",
+   "lines": [
+    "которая в девяносто восьмом забрала кота."
+   ],
+   "motion": "zoom_in",
+   "fx": [
+    "warm"
+   ],
+   "stickers": [
+    {
+     "type": "polaroid",
+     "image": "img/06.png",
+     "caption": "1998",
+     "pos": [
+      0.5,
+      0.42
+     ],
+     "width": 700,
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "image": "img/05.png",
+   "lines": [
+    "Отправь тому, с кем хотел бы так провести старость."
+   ],
+   "motion": "zoom_out",
+   "tail": 1.6
+  }
+ ]
+}

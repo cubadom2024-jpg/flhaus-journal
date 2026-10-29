@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+
+# ИИ-мультики: сборки и генерируемые звуки
+multiki/*/build/
+.claude/skills/ai-multik/assets/sfx/
